@@ -1,2 +1,2 @@
-# platinum-demo-code-api-enabled-integration
-IBM Platinum Demo: Cloud Pak for Integration - API enabled integration
+# platinum-demo-code-low-code-integration
+IBM Platinum Demo: Cloud Pak for Integration - low code integration
