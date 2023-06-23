@@ -49,6 +49,7 @@ done
 
 ## Defaults
 NAMESPACE=${NAMESPACE:-cp4i}
+COMMONSERVICES_NAMESPACE=${COMMONSERVICES_NAMESPACE:-cp4i-fs}
 RELEASE_NAME=${RELEASE_NAME:-assetrepo}
 GIT_REPO=${GIT_REPO:-"https://github.com/IBM/cp4i-demos.git"}
 REMOTE_NAME=${REMOTE_NAME:-"CP4I Demo Assets"}
@@ -66,9 +67,9 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 
 for i in $(seq 1 60); do
-  cp4iuser=$(oc get secrets -n ibm-common-services platform-auth-idp-credentials -o jsonpath='{.data.admin_username}' | base64 --decode)
-  cp4ipwd=$(oc get secrets -n ibm-common-services platform-auth-idp-credentials -o jsonpath='{.data.admin_password}' | base64 --decode)
-  icpConsoleUrl="https://$(oc get routes -n ibm-common-services cp-console -o jsonpath='{.spec.host}')"
+  cp4iuser=$(oc get secrets -n $COMMONSERVICES_NAMESPACE platform-auth-idp-credentials -o jsonpath='{.data.admin_username}' | base64 --decode)
+  cp4ipwd=$(oc get secrets -n $COMMONSERVICES_NAMESPACE platform-auth-idp-credentials -o jsonpath='{.data.admin_password}' | base64 --decode)
+  icpConsoleUrl="https://$(oc get routes -n $COMMONSERVICES_NAMESPACE cp-console -o jsonpath='{.spec.host}')"
 
   echo "- Generating access token for user at $icpConsoleUrl"
   # get an icp token
