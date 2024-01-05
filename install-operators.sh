@@ -1,5 +1,5 @@
 #!/bin/bash
-# © Copyright IBM Corporation 2023
+# © Copyright IBM Corporation 2023, 2024
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 
 namespace=${1:-"cp4i"}
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+INSTALL_CP4I=${2:-true}
 
 function wait_for_operator_start() {
     subscriptionName=${1}
@@ -52,6 +53,31 @@ function wait_for_operator_start() {
 }
 
 oc new-project $namespace
+
+if [ "$INSTALL_CP4I" = true ] ; then
+
+    oc apply -f $SCRIPT_DIR/setupResources/ibm-catalog-source.yaml
+    oc apply -f $SCRIPT_DIR/setupResources/operator-group.yaml
+    
+    cat $SCRIPT_DIR/setupResources/platform-nav-operator-subscription.yaml_template |
+      sed "s#{{NAMESPACE}}#$namespace#g;" > $SCRIPT_DIR/setupResources/platform-nav-operator-subscription.yaml
+    oc apply -f $SCRIPT_DIR/setupResources/platform-nav-operator-subscription.yaml
+    rm $SCRIPT_DIR/setupResources/platform-nav-operator-subscription.yaml
+    wait_for_operator_start ibm-integration-platform-navigator $namespace
+
+    cat $SCRIPT_DIR/setupResources/cert-manager.yaml_template |
+      sed "s#{{NAMESPACE}}#$namespace#g;" > $SCRIPT_DIR/setupResources/cert-manager.yaml
+    oc apply -f $SCRIPT_DIR/setupResources/cert-manager.yaml
+    rm $SCRIPT_DIR/setupResources/cert-manager.yaml
+    wait_for_operator_start cert-manager-operator openshift-operators
+
+    cat $SCRIPT_DIR/setupResources/ibm-common-services.yaml_template |
+      sed "s#{{NAMESPACE}}#$namespace#g;" > $SCRIPT_DIR/setupResources/ibm-common-services.yaml
+    oc apply -f $SCRIPT_DIR/setupResources/ibm-common-services.yaml
+    rm $SCRIPT_DIR/setupResources/ibm-common-services.yaml
+    wait_for_operator_start ibm-common-service-operator $namespace
+
+fi
 
 cat $SCRIPT_DIR/setupResources/apic-operator-subscription.yaml_template |
   sed "s#{{NAMESPACE}}#$namespace#g;" > $SCRIPT_DIR/setupResources/apic-operator-subscription.yaml

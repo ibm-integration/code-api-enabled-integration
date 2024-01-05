@@ -1,7 +1,7 @@
 #!/bin/bash
 #******************************************************************************
 # Licensed Materials - Property of IBM
-# (c) Copyright IBM Corporation 2023. All Rights Reserved.
+# (c) Copyright IBM Corporation 2023, 2024. All Rights Reserved.
 #
 # Note to U.S. Government Users Restricted Rights:
 # Use, duplication or disclosure restricted by GSA ADP Schedule
@@ -49,7 +49,7 @@ done
 
 ## Defaults
 NAMESPACE=${NAMESPACE:-cp4i}
-COMMONSERVICES_NAMESPACE=${COMMONSERVICES_NAMESPACE:-ibm-common-services}
+COMMONSERVICES_NAMESPACE=${COMMONSERVICES_NAMESPACE:-cp4i}
 RELEASE_NAME=${RELEASE_NAME:-assetrepo}
 GIT_REPO=${GIT_REPO:-"https://github.com/IBM/cp4i-demos.git"}
 REMOTE_NAME=${REMOTE_NAME:-"CP4I Demo Assets"}
@@ -67,13 +67,14 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 
 for i in $(seq 1 60); do
-  cp4iuser=$(oc get secrets -n $COMMONSERVICES_NAMESPACE platform-auth-idp-credentials -o jsonpath='{.data.admin_username}' | base64 --decode)
-  cp4ipwd=$(oc get secrets -n $COMMONSERVICES_NAMESPACE platform-auth-idp-credentials -o jsonpath='{.data.admin_password}' | base64 --decode)
-  icpConsoleUrl="https://$(oc get routes -n $COMMONSERVICES_NAMESPACE cp-console -o jsonpath='{.spec.host}')"
-
-  echo "- Generating access token for user at $icpConsoleUrl"
+  cp4iuser=$(oc get secrets -n $COMMONSERVICES_NAMESPACE integration-admin-initial-temporary-credentials -o jsonpath='{.data.username}' | base64 --decode)
+  cp4ipwd=$(oc get secrets -n $COMMONSERVICES_NAMESPACE integration-admin-initial-temporary-credentials -o jsonpath='{.data.admin_password}' | base64 --decode)
+  keyclockUrl="https://$(oc get route keycloak -o jsonpath={..host})"
+  echo "- Generating access token for user at $keyclockUrl"
+  echo "Using user=$cp4iuser and password=$cp4ipwd"
   # get an icp token
-  token_response=$(curl --insecure -s -X POST -H "Content-Type: application/x-www-form-urlencoded" -d "grant_type=password&scope=openid&username=$cp4iuser&password=$cp4ipwd" $icpConsoleUrl/idprovider/v1/auth/identitytoken)
+  token_response=$(curl --insecure -v -s -X POST -H "Content-Type: application/x-www-form-urlencoded" -d "grant_type=password&scope=openid&username=$cp4iuser&password=$cp4ipwd" $keyclockUrl/realms/cloudpak/protocol/openid-connect/token)
+  echo $token_response
   token=""
 
   if [[ ! -z "$token_response" ]]; then

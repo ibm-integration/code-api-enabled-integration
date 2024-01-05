@@ -1,4 +1,4 @@
-# © Copyright IBM Corporation 2023
+# © Copyright IBM Corporation 2023, 2024
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,8 +33,7 @@ spec:
         class: {{FILE_STORAGE}}
   license:
     accept: true
-    license: L-MJTK-WUU8HE
+    license: L-UAZF-8ZYQDD
     use: CloudPakForIntegrationNonProduction
   replicas: 1
-  useCommonServices: true
   version: '12.0'

@@ -1,4 +1,4 @@
-# © Copyright IBM Corporation 2023
+# © Copyright IBM Corporation 2023, 2024
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ metadata:
   name: ibm-appconnect
   namespace: {{NAMESPACE}}
 spec:
-  channel: v8.2
+  channel: v11.1
   installPlanApproval: Automatic
   name: ibm-appconnect
   source: ibm-operator-catalog
