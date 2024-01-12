@@ -35,7 +35,7 @@ oc new-project $NAMESPACE 2> /dev/null
 oc project $NAMESPACE
 
 if [ "$INSTALL_CP4I" = true ] ; then
-  kubectl patch storageclass $BLOCK_STORAGE -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+  oc patch storageclass $BLOCK_STORAGE -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 fi
 
 ./install-operators.sh
