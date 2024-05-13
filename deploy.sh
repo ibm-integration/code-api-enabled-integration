@@ -36,6 +36,7 @@ oc project $NAMESPACE
 
 if [ "$INSTALL_CP4I" = true ] ; then
   oc patch storageclass $BLOCK_STORAGE -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+  oc patch storageclass $FILE_STORAGE -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
 fi
 
 ./install-operators.sh
@@ -136,7 +137,7 @@ while [ $SECONDS -lt $END ]; do
       sleep 60
     fi
 done
-sleep 60 
+sleep 60
 line_separator "SUCCESS - ASSET REPO CREATED"
 
 echo ""
